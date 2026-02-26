@@ -8,7 +8,9 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
 
+// --- RUTAS PROTEGIDAS (Requieren Token) ---
 Route::middleware('auth:sanctum')->group(function () {
 
     // Usuario autenticado
@@ -46,7 +48,29 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/channels/{channel}', [ChannelController::class, 'show']);
 });
 
-// Rutas públicas
+// --- RUTAS PÚBLICAS ---
 Route::get('/videos', [VideoController::class, 'index']);
 Route::get('/channels/{channel}/videos', [VideoController::class, 'byChannel']);
 Route::get('/search', [VideoController::class, 'search']);
+
+// --- AUTENTICACIÓN GOOGLE ---
+Route::get('/auth/google', function () {
+    return Socialite::driver('google')->redirect();
+});
+
+Route::get('/auth/google/callback', function () {
+    try {
+        $user = Socialite::driver('google')->user();
+        // Por ahora devolvemos el JSON para verificar que funciona
+        return response()->json([
+            'status' => 'success',
+            'user' => $user
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No se pudo autenticar con Google',
+            'debug' => $e->getMessage()
+        ], 500);
+    }
+});
