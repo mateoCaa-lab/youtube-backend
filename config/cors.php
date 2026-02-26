@@ -1,11 +1,16 @@
 <?php
 
 return [
-    'paths' => ['api/*', 'sanctum/csrf-cookie', 'auth/*'],
+    // 1. Asegúrate de incluir 'auth/*' porque ahí movimos las rutas de Google
+    'paths' => ['api/*', 'sanctum/csrf-cookie', 'auth/*', 'login'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:5173'],
+    // 2. Agrega la URL de Vercel (sin la barra '/' al final)
+    'allowed_origins' => [
+        'http://localhost:5173',
+        'https://youtube-frontend-khaki.vercel.app'
+    ],
 
     'allowed_origins_patterns' => [],
 
@@ -15,6 +20,7 @@ return [
 
     'max_age' => 0,
 
+    // 3. Importante mantener esto en true para las cookies/tokens
     'supports_credentials' => true, 
 ];
 ?>
